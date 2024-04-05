@@ -29,7 +29,7 @@ public class DirectorDbStorage implements DirectorStorage {
         return jdbcTemplate.query(sql, directorRowMapper);
     }
     @Override
-    public Optional<Director> getById(int id) {
+    public Optional<Director> getById(long id) {
         String sql = "SELECT * FROM directors WHERE director_id = ?";
         return Optional.of(jdbcTemplate.queryForObject(sql, directorRowMapper, id));
     }

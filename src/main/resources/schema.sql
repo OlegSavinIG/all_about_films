@@ -3,7 +3,9 @@ drop table if exists friendships cascade;
 drop table if exists film_genres cascade;
 drop table if exists films cascade;
 drop table if exists users cascade;
+drop table if exists films_directors cascade;
 drop table if exists directors cascade;
+
 
 create table if not exists users (
     user_id BIGINT auto_increment primary key,
@@ -35,8 +37,7 @@ create table if not exists films (
     release_date DATE not null,
     duration INT not null,
     rate BIGINT,
-    mpa_id INT references mpa(mpa_id),
-    director_id BIGINT references directors(director_id)
+    mpa_id INT references mpa(mpa_id)
 );
 
 create table if not exists friendships (
@@ -45,6 +46,13 @@ create table if not exists friendships (
     primary key (user_id, friend_id),
     foreign key (user_id) references users(user_id),
     foreign key (friend_id) references users(user_id)
+);
+create table if not exists film_directors (
+    director_id BIGINT not null,
+    film_id BIGINT not null,
+    primary key (director_id, film_id),
+    foreign key (director_id) references directors(director_id),
+    foreign key (film_id) references films(film_id)
 );
 
 create table if not exists likes (
