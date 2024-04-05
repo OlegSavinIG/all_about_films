@@ -3,12 +3,11 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.dao.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.exception.NotExistException;
+import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +20,8 @@ public class DirectorService {
     }
 
     public Director getById(int id) {
-        return Optional.ofNullable(directorStorage.getById(id).get())
-                .orElseThrow(() -> new ValidationException("Не существует пользователь с таким id " + id));
+        return directorStorage.getById(id)
+                .orElseThrow(() -> new NotExistException("Не существует режиссер с таким id " + id));
     }
 
     public Director createDirector(Director director) {
@@ -30,9 +29,7 @@ public class DirectorService {
     }
 
     public Director update(Director director) {
-        if (directorStorage.getById(director.getId()) == null) {
-            throw new ValidationException("Такого режиссера не существует");
-        }
+        directorStorage.getById(director.getId()).orElseThrow(() -> new NotExistException("Не существует режиссер"));
         return directorStorage.update(director);
     }
 

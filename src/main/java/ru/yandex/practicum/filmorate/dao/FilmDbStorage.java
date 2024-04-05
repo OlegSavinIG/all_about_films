@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -47,7 +46,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film add(Film film) {
         if (filmValidator(film)) {
-            throw new NotExistException(HttpStatus.BAD_REQUEST, "Проблема с передачей данных фильма");
+            throw new NotExistException("Проблема с передачей данных фильма");
         }
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
@@ -71,7 +70,8 @@ public class FilmDbStorage implements FilmStorage {
             for (Director director : film.getDirectors()) {
                 jdbcTemplate.update(sql, filmId, director.getId());
             }
-        } return getById(filmId);
+        }
+        return getById(filmId);
     }
 
     public List<Film> getFilmsByDirector(long directorId, String sortBy) {
@@ -81,6 +81,7 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sql, filmMapper, directorId);
         return films;
     }
+
     @Override
     public List<Film> getStorage() {
         log.info("Получение списка всех фильмов");
@@ -92,7 +93,7 @@ public class FilmDbStorage implements FilmStorage {
         String sqlChecker = "Select film_id from films where film_id = ?";
         List<Long> filmIdId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getLong("film_id"));
         if (filmIdId.isEmpty()) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует фильма с таким id " + id);
+            throw new NotExistException("Не существует фильма с таким id " + id);
         }
         log.info("Получение фильма по ID: {}", id);
         return jdbcTemplate.queryForObject(sqlGetById, filmMapper, id);
@@ -106,11 +107,25 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
+        log.info("Начало обновления фильма с ID: {}", film.getId());
+        jdbcTemplate.update("DELETE FROM film_genres WHERE film_id = ?", film.getId());
+        String sqlForGenres = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
+        for (Genre genre : film.getGenres()) {
+            log.info("Вставка жанра с ID: {} для фильма с ID: {}", genre.getId(), film.getId());
+            jdbcTemplate.update(sqlForGenres, film.getId(), genre.getId());
+        }
+
+        jdbcTemplate.update("DELETE FROM film_directors WHERE film_id = ?", film.getId());
+        String sqlForDirectors = "INSERT INTO film_directors (film_id, director_id) VALUES (?, ?)";
+        for (Director director : film.getDirectors()) {
+            log.info("Вставка режиссера с ID: {} для фильма с ID: {}", director.getId(), film.getId());
+            jdbcTemplate.update(sqlForDirectors, film.getId(), director.getId());
+        }
         log.info("Обновление фильма: {}", film);
         jdbcTemplate.update(sqlUpdate, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
                 film.getDuration(), film.getRate(), film.getMpa().getId(), film.getId());
         log.info("Фильм с ID: {} успешно обновлен", film.getId());
-        return film;
+        return getById(film.getId());
     }
 
     public void addLike(long filmId, long userId) {

@@ -32,7 +32,6 @@ public class FilmDbStorageTest {
                 .duration(120)
                 .rate(5)
                 .mpa(new MpaRating(1, "G"))
-                .genres(new ArrayList<>())
                 .build();
         testFilm = filmStorage.add(testFilm);
     }

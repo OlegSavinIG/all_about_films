@@ -23,16 +23,20 @@ public class DirectorDbStorage implements DirectorStorage {
             .id(rs.getInt("director_id"))
             .name(rs.getString("name"))
             .build());
+
     @Override
     public List<Director> getAllDirectors() {
         String sql = "SELECT * FROM directors";
         return jdbcTemplate.query(sql, directorRowMapper);
     }
+
     @Override
     public Optional<Director> getById(long id) {
         String sql = "SELECT * FROM directors WHERE director_id = ?";
-        return Optional.of(jdbcTemplate.queryForObject(sql, directorRowMapper, id));
+        List<Director> director = jdbcTemplate.query(sql, directorRowMapper, id);
+        return director.stream().findFirst();
     }
+
     @Override
     public Director createDirector(Director director) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -44,12 +48,14 @@ public class DirectorDbStorage implements DirectorStorage {
         director.setId(id);
         return director;
     }
+
     @Override
     public Director update(Director director) {
         String sql = "UPDATE directors SET name = ?";
         jdbcTemplate.update(sql, director.getName());
         return director;
     }
+
     @Override
     public void deleteById(int id) {
         String sql = "DELETE FROM directors WHERE director_id = ?";

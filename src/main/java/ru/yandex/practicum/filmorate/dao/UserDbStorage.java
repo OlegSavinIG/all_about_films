@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -77,7 +76,7 @@ public class UserDbStorage implements UserStorage {
         String sqlChecker = "Select user_id from users where user_id = ?";
         List<Long> userId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getLong("user_id"));
         if (userId.isEmpty()) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует пользователя с таким id " + id);
+            throw new NotExistException("Не существует пользователя с таким id " + id);
         }
         log.info("Получение пользователя с ID: {}", id);
         User user = jdbcTemplate.queryForObject(sqlGetById, userRowMapper, id);

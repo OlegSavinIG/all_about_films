@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -40,7 +39,7 @@ public class MpaDbStorage implements MpaStorage {
         String sqlChecker = "Select mpa_id from mpa where mpa_id = ?";
         List<Integer> mpaId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getInt("mpa_id"));
         if (mpaId.isEmpty()) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует МРА с таким id " + id);
+            throw new NotExistException("Не существует МРА с таким id " + id);
         }
         log.info("Выполнение запроса на получение MPA рейтинга с ID: {}", id);
         try {

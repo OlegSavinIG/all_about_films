@@ -12,9 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -36,7 +34,7 @@ public class Film extends BaseUnit {
     private long rate = 0;
     @NotNull
     private MpaRating mpa;
-    private final List<Genre> genres = new ArrayList<>();
+    private final Set<Genre> genres = new HashSet<>();
     private final Set<Integer> likes = new HashSet<>();
-    private final List<Director> directors = new ArrayList<>();
+    private final Set<Director> directors = new HashSet<>();
 }

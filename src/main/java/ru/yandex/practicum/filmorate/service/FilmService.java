@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.storage.DirectorStorage;
 import ru.yandex.practicum.filmorate.dao.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.storage.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,11 +17,14 @@ public class FilmService {
 
     private final FilmStorage filmStorage;
     private final DirectorStorage directorStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, DirectorStorage directorStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, DirectorStorage directorStorage,
+                       @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.directorStorage = directorStorage;
+        this.userStorage = userStorage;
     }
 
     private boolean filmExist(long filmId) {
@@ -34,7 +37,7 @@ public class FilmService {
 
     public Film update(Film film) {
         if (!filmExist(film.getId())) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Такого фильмa не существует");
+            throw new NotExistException("Такого фильмa не существует");
         }
         return filmStorage.update(film);
     }
@@ -52,11 +55,15 @@ public class FilmService {
     }
 
     public void addLike(long filmId, long userId) {
-        filmStorage.addLike(filmId, userId);
+        if (filmExist(filmId) && userStorage.getById(userId) != null) {
+            filmStorage.addLike(filmId, userId);
+        }
     }
 
     public void deleteLike(long filmId, long userId) {
-        filmStorage.deleteLike(filmId, userId);
+        if (filmExist(filmId) && userStorage.getById(userId) != null) {
+            filmStorage.deleteLike(filmId, userId);
+        }
     }
 
     public List<Film> getTopFilms(int count) {
@@ -65,7 +72,7 @@ public class FilmService {
 
     public List<Film> getFilmsByDirector(long directorId, String sortBy) {
         if (directorStorage.getById(directorId) == null) {
-            throw new NotExistException(HttpStatus.BAD_REQUEST,"Такого режиссера не существует");
+            throw new NotExistException("Такого режиссера не существует");
         }
         if (!sortBy.equals("likes") && !sortBy.equals("year")) {
             throw new ValidationException("Не правильно передан параметр сортировки");

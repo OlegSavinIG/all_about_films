@@ -1,24 +1,20 @@
 package ru.yandex.practicum.filmorate.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class NotExistException extends ResponseStatusException {
-    public NotExistException(HttpStatus status) {
-        super(status);
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+public class NotExistException extends RuntimeException {
+
+    public NotExistException() {
+        super();
     }
 
-
-
-    public NotExistException(HttpStatus status, String reason) {
-        super(status, reason);
+    public NotExistException(String message) {
+        super(message);
     }
 
-    public NotExistException(HttpStatus status, String reason, Throwable cause) {
-        super(status, reason, cause);
-    }
-
-    public NotExistException(int rawStatusCode, String reason, Throwable cause) {
-        super(rawStatusCode, reason, cause);
+    public NotExistException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

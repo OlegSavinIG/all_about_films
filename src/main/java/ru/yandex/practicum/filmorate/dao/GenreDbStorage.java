@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -41,7 +40,7 @@ public class GenreDbStorage implements GenreStorage {
         String sqlChecker = "Select genre_id from genres where genre_id = ?";
         List<Integer> genreId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getInt("genre_id"));
         if (genreId.isEmpty()) {
-            throw new NotExistException(HttpStatus.NOT_FOUND, "Не существует жанра с таким id " + id);
+            throw new NotExistException("Не существует жанра с таким id " + id);
         }
         log.info("Выполнение запроса на получение жанра с ID: {}", id);
         return jdbcTemplate.query(sqlFindById, genreRowMapper, id).stream().findAny();

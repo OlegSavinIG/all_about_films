@@ -34,8 +34,8 @@ public class FilmMapper implements RowMapper<Film> {
                 .mpa(getMpaRating(rs.getInt("mpa_id")))
                 .build();
         Long filmId = rs.getLong("film_id");
-            film.getDirectors().addAll(getDirector(filmId));
-            film.getGenres().addAll(getGenres(filmId));
+        film.getDirectors().addAll(getDirector(filmId));
+        film.getGenres().addAll(getGenres(filmId));
         return film;
     }
 

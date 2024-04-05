@@ -11,8 +11,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MinFilmDate {
     String value() default "1895-12-28";
+
     String message() default ("Дата указана неправильно");
+
     Class<?>[] groups() default {};
+
     Class<?>[] payload() default {};
 
 }
