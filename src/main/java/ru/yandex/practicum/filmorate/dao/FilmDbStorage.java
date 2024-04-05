@@ -81,7 +81,7 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> films = jdbcTemplate.query(sql, filmMapper, directorId);
         return films;
     }
-
+private void test() {}
     @Override
     public List<Film> getStorage() {
         log.info("Получение списка всех фильмов");
