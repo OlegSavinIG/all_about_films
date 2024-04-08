@@ -20,7 +20,6 @@ import java.util.Set;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@AllArgsConstructor
 public class Film extends BaseUnit {
     @NotBlank(message = "Название не может быть пустым")
     private String name;

@@ -27,7 +27,7 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
-    private boolean filmExist(long filmId) {
+    public boolean isFilmExist(long filmId) {
         return filmStorage.getById(filmId) != null;
     }
 
@@ -36,8 +36,8 @@ public class FilmService {
     }
 
     public Film update(Film film) {
-        if (!filmExist(film.getId())) {
-            throw new NotExistException("Такого фильмa не существует");
+        if (!isFilmExist(film.getId())) {
+            throw new NotExistException("Этого фильмa не существует");
         }
         return filmStorage.update(film);
     }
@@ -55,13 +55,13 @@ public class FilmService {
     }
 
     public void addLike(long filmId, long userId) {
-        if (filmExist(filmId) && userStorage.getById(userId) != null) {
+        if (isFilmExist(filmId) && userStorage.getById(userId) != null) {
             filmStorage.addLike(filmId, userId);
         }
     }
 
     public void deleteLike(long filmId, long userId) {
-        if (filmExist(filmId) && userStorage.getById(userId) != null) {
+        if (isFilmExist(filmId) && userStorage.getById(userId) != null) {
             filmStorage.deleteLike(filmId, userId);
         }
     }
@@ -72,7 +72,7 @@ public class FilmService {
 
     public List<Film> getFilmsByDirector(long directorId, String sortBy) {
         if (directorStorage.getById(directorId) == null) {
-            throw new NotExistException("Такого режиссера не существует");
+            throw new NotExistException("Этого режиссера не существует");
         }
         if (!sortBy.equals("likes") && !sortBy.equals("year")) {
             throw new ValidationException("Не правильно передан параметр сортировки");

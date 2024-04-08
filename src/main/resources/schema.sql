@@ -54,6 +54,28 @@ create table if not exists film_directors (
     foreign key (director_id) references directors(director_id),
     foreign key (film_id) references films(film_id)
 );
+create table if not exists reviews (
+    review_id BIGINT auto_increment primary key,
+    content VARCHAR(255),
+    isPositive BOOLEAN,
+    useful INT
+);
+create table if not exists reviews_films_users (
+    review_id BIGINT not null,
+    film_id BIGINT not null,
+    user_id BIGINT not null,
+    primary key (review_id, film_id),
+    foreign key (film_id) references films(film_id),
+    foreign key (user_id) references users(user_id),
+    foreign key (review_id) references reviews(review_id)
+);
+create table if not exists reviews_rate (
+    review_id BIGINT not null,
+    user_id BIGINT not null,
+    primary key (review_id, user_id),
+    foreign key (user_id) references users(user_id),
+    foreign key (review_id) references reviews(review_id)
+);
 
 create table if not exists likes (
     film_id BIGINT not null,
