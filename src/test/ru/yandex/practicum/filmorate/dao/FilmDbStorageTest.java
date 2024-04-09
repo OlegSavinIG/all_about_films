@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,8 +79,8 @@ public class FilmDbStorageTest {
                 .duration(150)
                 .rate(7)
                 .mpa(new MpaRating(2, "PG"))
-                .genres(new ArrayList<>())
                 .build();
+        film2.getGenres().addAll(new HashSet<>());
         filmStorage.add(film2);
         List<Film> topFilms = filmStorage.getTopFilms(2);
 

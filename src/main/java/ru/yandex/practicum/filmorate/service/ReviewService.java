@@ -35,7 +35,7 @@ public class ReviewService {
     }
 
     public Review updateReview(Review review) {
-        if (!isReviewExist(review.getId())) {
+        if (!isReviewExist(review.getReviewId())) {
             throw new NotExistException("Этот отзыв не существует");
         }
         return reviewStorage.updateReview(review);

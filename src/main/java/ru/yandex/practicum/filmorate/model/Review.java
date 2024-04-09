@@ -1,24 +1,27 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class Review extends BaseUnit {
+public class Review {
+    private long reviewId;
+    @NotEmpty
     private String content;
     @NotNull
-    private boolean isPositive;
+    private Boolean isPositive;
     private int useful = 0;
     @NotNull
-    private long userId;
+    @Min(1)
+    private Long userId;
     @NotNull
-    private long filmId;
+    @Min(1)
+    private Long filmId;
 }

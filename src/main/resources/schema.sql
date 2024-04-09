@@ -5,6 +5,9 @@ drop table if exists films cascade;
 drop table if exists users cascade;
 drop table if exists films_directors cascade;
 drop table if exists directors cascade;
+drop table if exists reviews cascade;
+drop table if exists reviews_films_users cascade;
+drop table if exists reviews_rate cascade;
 
 
 create table if not exists users (
@@ -58,7 +61,9 @@ create table if not exists reviews (
     review_id BIGINT auto_increment primary key,
     content VARCHAR(255),
     isPositive BOOLEAN,
-    useful INT
+    useful INT,
+    user_id BIGINT not null,
+    film_id BIGINT not null
 );
 create table if not exists reviews_films_users (
     review_id BIGINT not null,

@@ -23,8 +23,8 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<Review> getReviewsByFilmIdOrWithout(@RequestParam Long filmId, @RequestParam(defaultValue = "10") int count) {
-        if (filmId == null) {
+    public List<Review> getReviewsByFilmIdOrWithout(@RequestParam(defaultValue = "-1") long filmId, @RequestParam(defaultValue = "10") int count) {
+        if (filmId == -1) {
             log.info("Получение всех отзывов");
             return reviewService.getAllReviews(count);
         }

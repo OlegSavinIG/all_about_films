@@ -25,7 +25,10 @@ public class ReviewDbStorage implements ReviewStorage {
     public Optional<Review> getReviewById(long id) {
         String sql = "SELECT * FROM reviews WHERE review_id = ?";
         List<Review> review = jdbcTemplate.query(sql, reviewMapper, id);
-        return Optional.ofNullable(review.stream().findFirst().get());
+        if (review.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(review.stream().findFirst().get());
     }
 
     @Override
@@ -34,7 +37,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public List<Review> getReviewsByFilmId(Long filmId, int count) {
+    public List<Review> getReviewsByFilmId(long filmId, int count) {
         String sql = "SELECT * FROM reviews WHERE film_id = ? LIMIT ?";
         return jdbcTemplate.query(sql, reviewMapper, filmId, count);
     }
@@ -45,9 +48,12 @@ public class ReviewDbStorage implements ReviewStorage {
                 .withTableName("reviews").usingGeneratedKeyColumns("review_id");
         Map<String, Object> values = new HashMap<>();
         values.put("content", review.getContent());
-        values.put("isPositive", review.isPositive());
+        values.put("isPositive", review.getIsPositive());
         values.put("useful", review.getUseful());
+        values.put("user_id", review.getUserId());
+        values.put("film_id", review.getFilmId());
         long reviewId = (Long) simpleJdbcInsert.executeAndReturnKey(values);
+        review.setReviewId(reviewId);
         jdbcTemplate.update("INSERT INTO reviews_films_users (review_id, film_id, user_id) VALUES(?, ?, ?)"
                 , reviewId, review.getFilmId(), review.getUserId());
         return review;
@@ -55,16 +61,18 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review updateReview(Review review) {
-        String sql = "UPDATE reviews SET review_id = ?, content = ?, useful = ?, isPositive = ?";
-        jdbcTemplate.update(sql, review.getId(), review.getContent(), review.getUseful(), review.isPositive());
-        jdbcTemplate.update("DELETE from reviews_films_users WHERE review_id = ?", review.getId());
+        String sql = "UPDATE reviews SET review_id = ?, content = ?, isPositive = ?";
+        jdbcTemplate.update(sql, review.getReviewId(), review.getContent(), review.getIsPositive());
+        jdbcTemplate.update("DELETE from reviews_films_users WHERE review_id = ?", review.getReviewId());
         jdbcTemplate.update("INSERT INTO reviews_films_users (review_id, film_id, user_id) VALUES(?, ?, ?)"
-                , review.getId(), review.getFilmId(), review.getUserId());
-        return getReviewById(review.getId()).get();
+                , review.getReviewId(), review.getFilmId(), review.getUserId());
+        return getReviewById(review.getReviewId()).get();
     }
 
     @Override
     public void deleteReviewById(long id) {
+        jdbcTemplate.update("DELETE FROM reviews_rate WHERE review_id = ?", id);
+        jdbcTemplate.update("DELETE FROM reviews_films_users WHERE review_id = ?", id);
         jdbcTemplate.update("DELETE FROM reviews WHERE review_id = ?", id);
     }
 

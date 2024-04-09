@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface ReviewStorage {
     Optional<Review> getReviewById(long id);
      List<Review> getAllReviews(int count);
-     List<Review> getReviewsByFilmId(Long filmId, int count);
+     List<Review> getReviewsByFilmId(long filmId, int count);
      Review addReview(Review review);
      Review updateReview(Review review);
      void deleteReviewById(long id);
