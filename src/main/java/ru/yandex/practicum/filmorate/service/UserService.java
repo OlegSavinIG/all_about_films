@@ -1,24 +1,25 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.storage.EventStorage;
+import ru.yandex.practicum.filmorate.dao.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.storage.UserStorage;
 import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotExistException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
-
-
-    @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    private final EventStorage eventStorage;
+    private final FilmStorage filmStorage;
 
     public User createUser(User user) {
         if (user.getName().isBlank() || user.getName() == null) {
@@ -51,5 +52,23 @@ public class UserService {
     public User getById(long id) {
         return userStorage.getById(id)
                 .orElseThrow(() -> new NotExistException("Не существует ользователя с таким id " + id));
+    }
+
+    public List<Event> getEventByUserId(long id) {
+        if (userStorage.getById(id) == null) {
+            throw new NotExistException("Такого пользователя не существует");
+        }
+        return eventStorage.getEventByUserId(id);
+    }
+
+    public List<Film> getFilmRecommendations(long userId) {
+        if (userStorage.getById(userId) == null) {
+            throw new NotExistException("Такого пользователя не существует");
+        }
+        Long commonUserId = userStorage.getCommonUserByLikes(userId);
+        if (commonUserId == null) {
+            return Collections.emptyList();
+        }
+       return filmStorage.getLikedFilmsBYUserId(userId, commonUserId);
     }
 }

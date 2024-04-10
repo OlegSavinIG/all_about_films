@@ -82,4 +82,20 @@ public class UserDbStorage implements UserStorage {
         User user = jdbcTemplate.queryForObject(sqlGetById, userRowMapper, id);
         return Optional.ofNullable(user);
     }
+
+    public Long getCommonUserByLikes(long userId) {
+        String sql = "SELECT user_id, COUNT(*) as common_likes " +
+                "FROM likes " +
+                "WHERE film_id IN (SELECT film_id FROM likes WHERE user_id = ?) " +
+                "AND user_id <> ? " +
+                "GROUP BY user_id " +
+                "ORDER BY common_likes DESC " +
+                "LIMIT 1";
+        List<Long> commonUserId = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("user_id"), userId, userId);
+        if (commonUserId.isEmpty()) {
+            return null;
+        }
+        return commonUserId.stream().findFirst().get();
+    }
+
 }

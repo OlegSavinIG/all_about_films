@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 @Component
 public class ReviewMapper implements RowMapper<Review> {
     @Override

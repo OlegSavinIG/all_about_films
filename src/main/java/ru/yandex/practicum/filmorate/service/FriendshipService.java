@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.storage.FriendshipsStorage;
 import ru.yandex.practicum.filmorate.model.User;
@@ -8,14 +8,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class FriendshipService {
     private final FriendshipsStorage friendshipsStorage;
-
-    @Autowired
-    public FriendshipService(FriendshipsStorage friendshipsStorage) {
-        this.friendshipsStorage = friendshipsStorage;
-    }
-
 
     public void addFriend(long firstUserId, long secondUserId) {
         friendshipsStorage.addFriend(firstUserId, secondUserId);
@@ -33,4 +28,5 @@ public class FriendshipService {
         Set<User> allFriends = friendshipsStorage.getAllFriends(id);
         return allFriends;
     }
+
 }

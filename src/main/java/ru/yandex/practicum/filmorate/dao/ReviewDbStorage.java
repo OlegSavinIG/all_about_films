@@ -6,7 +6,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.mapper.ReviewMapper;
+import ru.yandex.practicum.filmorate.dao.storage.EventStorage;
 import ru.yandex.practicum.filmorate.dao.storage.ReviewStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
     private final ReviewMapper reviewMapper;
+    private final EventStorage eventStorage;
 
     @Override
     public Optional<Review> getReviewById(long id) {
@@ -33,12 +36,12 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAllReviews(int count) {
-        return jdbcTemplate.query("SELECT * FROM reviews LIMIT ?", reviewMapper, count);
+        return jdbcTemplate.query("SELECT * FROM reviews ORDER BY useful DESC LIMIT ?", reviewMapper, count);
     }
 
     @Override
     public List<Review> getReviewsByFilmId(long filmId, int count) {
-        String sql = "SELECT * FROM reviews WHERE film_id = ? LIMIT ?";
+        String sql = "SELECT * FROM reviews WHERE film_id = ? ORDER BY useful DESC LIMIT ?";
         return jdbcTemplate.query(sql, reviewMapper, filmId, count);
     }
 
@@ -56,6 +59,7 @@ public class ReviewDbStorage implements ReviewStorage {
         review.setReviewId(reviewId);
         jdbcTemplate.update("INSERT INTO reviews_films_users (review_id, film_id, user_id) VALUES(?, ?, ?)"
                 , reviewId, review.getFilmId(), review.getUserId());
+        eventStorage.saveEvent(review.getUserId(), reviewId, Event.EventType.REVIEW, Event.Operation.ADD);
         return review;
     }
 
@@ -66,14 +70,18 @@ public class ReviewDbStorage implements ReviewStorage {
         jdbcTemplate.update("DELETE from reviews_films_users WHERE review_id = ?", review.getReviewId());
         jdbcTemplate.update("INSERT INTO reviews_films_users (review_id, film_id, user_id) VALUES(?, ?, ?)"
                 , review.getReviewId(), review.getFilmId(), review.getUserId());
+        eventStorage.saveEvent(review.getUserId(), review.getReviewId(), Event.EventType.REVIEW, Event.Operation.UPDATE);
         return getReviewById(review.getReviewId()).get();
     }
 
     @Override
     public void deleteReviewById(long id) {
+        Long userId = jdbcTemplate.queryForObject("SELECT user_id FROM reviews WHERE review_id = ?", Long.class, id);
+        eventStorage.saveEvent(userId, id, Event.EventType.REVIEW, Event.Operation.REMOVE);
         jdbcTemplate.update("DELETE FROM reviews_rate WHERE review_id = ?", id);
         jdbcTemplate.update("DELETE FROM reviews_films_users WHERE review_id = ?", id);
         jdbcTemplate.update("DELETE FROM reviews WHERE review_id = ?", id);
+
     }
 
     @Override

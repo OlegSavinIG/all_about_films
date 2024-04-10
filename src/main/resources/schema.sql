@@ -8,6 +8,7 @@ drop table if exists directors cascade;
 drop table if exists reviews cascade;
 drop table if exists reviews_films_users cascade;
 drop table if exists reviews_rate cascade;
+drop table if exists events cascade;
 
 
 create table if not exists users (
@@ -96,4 +97,13 @@ create table if not exists film_genres (
     primary key (film_id, genre_id),
     foreign key (film_id) references films(film_id),
     foreign key (genre_id) references genres(genre_id)
+);
+create table if not exists events (
+    event_id BIGINT not null auto_increment primary key,
+    user_id BIGINT not null,
+    entity_id BIGINT not null,
+    event_type varchar(64) not null,
+    operation varchar(64) not null,
+    timestamp BIGINT,
+    foreign key (user_id) references users(user_id)
 );

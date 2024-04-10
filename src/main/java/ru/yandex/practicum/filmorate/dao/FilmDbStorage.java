@@ -128,6 +128,16 @@ public class FilmDbStorage implements FilmStorage {
         return getById(film.getId());
     }
 
+    @Override
+    public List<Film> getLikedFilmsBYUserId(long userId, Long commonUserId) {
+        List<Film> userFilms = jdbcTemplate.query("SELECT * FROM films WHERE film_id IN " +
+                "(SELECT film_id FROM likes WHERE user_id = ?)", filmMapper, userId);
+        List<Film> recommendedFilms = jdbcTemplate.query("SELECT * FROM films WHERE film_id IN " +
+                "(SELECT film_id FROM likes WHERE user_id = ?)", filmMapper, commonUserId);
+        recommendedFilms.removeAll(userFilms);
+        return recommendedFilms;
+    }
+
     public void addLike(long filmId, long userId) {
         jdbcTemplate.update(sqlAddLike, filmId);
         String sqlLikesTable = "INSERT into likes (film_id, user_id) VALUES (?, ?)";

@@ -16,4 +16,6 @@ public interface UserStorage {
     List<User> getAllUsers();
 
     Optional<User> getById(long id);
+
+    Long getCommonUserByLikes(long userId);
 }

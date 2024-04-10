@@ -1,31 +1,26 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.dao.storage.EventStorage;
 import ru.yandex.practicum.filmorate.dao.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.storage.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
     private final DirectorStorage directorStorage;
     private final UserStorage userStorage;
-
-    @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, DirectorStorage directorStorage,
-                       @Qualifier("userDbStorage") UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.directorStorage = directorStorage;
-        this.userStorage = userStorage;
-    }
+    private final EventStorage eventStorage;
 
     public boolean isFilmExist(long filmId) {
         return filmStorage.getById(filmId) != null;
@@ -57,12 +52,14 @@ public class FilmService {
     public void addLike(long filmId, long userId) {
         if (isFilmExist(filmId) && userStorage.getById(userId) != null) {
             filmStorage.addLike(filmId, userId);
+            eventStorage.saveEvent(userId, filmId, Event.EventType.LIKE, Event.Operation.ADD);
         }
     }
 
     public void deleteLike(long filmId, long userId) {
         if (isFilmExist(filmId) && userStorage.getById(userId) != null) {
             filmStorage.deleteLike(filmId, userId);
+            eventStorage.saveEvent(userId, filmId, Event.EventType.LIKE, Event.Operation.REMOVE);
         }
     }
 

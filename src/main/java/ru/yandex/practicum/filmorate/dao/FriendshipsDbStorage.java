@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.storage.EventStorage;
 import ru.yandex.practicum.filmorate.dao.storage.FriendshipsStorage;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collections;
@@ -15,9 +17,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class FriendshipsDbStorage implements FriendshipsStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userStorage;
+    private final EventStorage eventStorage;
     private final String sqlAdd = "INSERT into friendships (user_id, friend_id) values (?, ?)";
 
     private final String sqlDelete = "DELETE from friendships  WHERE user_id = ? AND friend_id = ?";
@@ -30,18 +34,12 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
     private final String sqlAllFriends = "SELECT friend_id from friendships where user_id = ?";
 
 
-    @Autowired
-    public FriendshipsDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.userStorage = userStorage;
-    }
-
-
     @Override
     public void addFriend(long firstUserId, long secondUserId) {
         if (isUserExists(firstUserId) && isUserExists(secondUserId)) {
             log.info("Добавление дружбы между пользователями {} и {}", firstUserId, secondUserId);
             jdbcTemplate.update(sqlAdd, firstUserId, secondUserId);
+            eventStorage.saveEvent(firstUserId, secondUserId, Event.EventType.FRIEND, Event.Operation.ADD);
         }
     }
 
@@ -50,6 +48,7 @@ public class FriendshipsDbStorage implements FriendshipsStorage {
         if (isUserExists(firstUserId) && isUserExists(secondUserId)) {
             log.info("Удаление дружбы между пользователями {} и {}", firstUserId, secondUserId);
             jdbcTemplate.update(sqlDelete, firstUserId, secondUserId);
+            eventStorage.saveEvent(firstUserId, secondUserId, Event.EventType.FRIEND, Event.Operation.REMOVE);
         }
     }
 
