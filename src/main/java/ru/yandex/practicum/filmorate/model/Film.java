@@ -20,8 +20,6 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class Film extends BaseUnit {
-    private final Set<Genre> genres = new HashSet<>();
-    private final Set<Director> directors = new HashSet<>();
     @NotBlank(message = "Название не может быть пустым")
     private String name;
     @Size(max = 200)
@@ -34,4 +32,6 @@ public class Film extends BaseUnit {
     private long rate = 0;
     @NotNull
     private MpaRating mpa;
+    private final Set<Genre> genres = new HashSet<>();
+    private final Set<Director> directors = new HashSet<>();
 }

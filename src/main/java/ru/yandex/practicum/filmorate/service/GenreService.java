@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.GenreDbStorage;
+import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
@@ -22,6 +23,6 @@ public class GenreService {
     }
 
     public Genre findById(int id) {
-        return genreDbStorage.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid genre ID: " + id));
+        return genreDbStorage.findById(id).orElseThrow(() -> new NotExistException("Invalid genre ID: " + id));
     }
 }

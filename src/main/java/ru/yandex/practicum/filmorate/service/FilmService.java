@@ -2,15 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.storage.DirectorStorage;
-import ru.yandex.practicum.filmorate.dao.storage.EventStorage;
-import ru.yandex.practicum.filmorate.dao.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.storage.UserStorage;
+import ru.yandex.practicum.filmorate.dao.storage.*;
 import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.Year;
 import java.util.List;
 
 @Service
@@ -21,6 +19,7 @@ public class FilmService {
     private final DirectorStorage directorStorage;
     private final UserStorage userStorage;
     private final EventStorage eventStorage;
+    private final GenreStorage genreStorage;
 
     public boolean isFilmExist(long filmId) {
         return filmStorage.getById(filmId) != null;
@@ -86,5 +85,17 @@ public class FilmService {
         if (by.equals("director")) {
             return filmStorage.serchFilmsByDirector(query);
         } else return filmStorage.searchFilmsByTitle(query);
+    }
+
+    public List<Film> getPopularFilmsByGenreAndYear(int count, int genreId, int year) {
+        genreStorage.findById(genreId);
+        return filmStorage.getPopularFilmsByGenreAndYear(count, genreId, year);
+    }
+
+    public List<Film> getCommonFilmsWithFriend(long userId, long friendId) {
+        if (userStorage.getById(userId) == null || userStorage.getById(friendId) == null) {
+            throw new NotExistException("Не существует пользователя");
+        }
+        return filmStorage.getCommonFilmsWithFriend(userId, friendId);
     }
 }

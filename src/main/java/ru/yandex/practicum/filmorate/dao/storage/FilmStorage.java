@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.Year;
 import java.util.List;
 
 public interface FilmStorage {
@@ -30,4 +31,8 @@ public interface FilmStorage {
     List<Film> serchFilmsByDirector(String query);
 
     List<Film> searchFilmsByTitle(String query);
+
+    List<Film> getPopularFilmsByGenreAndYear(int count, Integer genreId, Integer year);
+
+    List<Film> getCommonFilmsWithFriend(long userId, long friendId);
 }

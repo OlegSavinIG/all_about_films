@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE film_id IN (SELECT film_id FROM film_directors WHERE director_id = ?) " +
                 "ORDER BY " + sortBy;
         if (sortBy.equals("rate")) {
-           return jdbcTemplate.query(sql + " DESC", filmMapper, directorId);
+            return jdbcTemplate.query(sql + " DESC", filmMapper, directorId);
         }
         List<Film> films = jdbcTemplate.query(sql, filmMapper, directorId);
         return films;
@@ -148,7 +149,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN directors d ON fd.director_id = d.director_id " +
                 "WHERE f.name ILIKE ? OR d.name ILIKE ? " +
                 "ORDER BY f.rate";
-       return jdbcTemplate.query(sql, filmMapper , "%" + query + "%", "%" + query + "%");
+        return jdbcTemplate.query(sql, filmMapper, "%" + query + "%", "%" + query + "%");
     }
 
     @Override
@@ -168,6 +169,37 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY rate DESC";
         List<Film> filmByTitle = jdbcTemplate.query(sql, filmMapper, "%" + query + "%");
         return filmByTitle;
+    }
+
+    @Override
+    public List<Film> getPopularFilmsByGenreAndYear(int count, Integer genreId, Integer year) {
+        String sql = "SELECT f.* FROM films f " +
+                "LEFT JOIN film_genres fg ON fg.film_id = f.film_id " +
+                "%s " +
+                "GROUP BY f.film_id " +
+                "ORDER BY rate DESC " +
+                "LIMIT ?";
+        List<String> params = new ArrayList<>();
+        if (genreId != 0) {
+            params.add("fg.genre_id = " + genreId);
+        }
+        if (year != 0) {
+            params.add("YEAR(f.release_date) = " + year);
+        }
+        String sqlParams = (!params.isEmpty()) ? "WHERE ".concat(String.join("AND ", params)) : "";
+        return jdbcTemplate.query(String.format(sql, sqlParams), filmMapper, count);
+    }
+
+    @Override
+    public List<Film> getCommonFilmsWithFriend(long userId, long friendId) {
+        String sql = "SELECT f.* " +
+                "FROM films f " +
+                "JOIN likes l ON f.film_id = l.film_id " +
+                "JOIN likes l2 ON f.film_id = l2.film_id " +
+                "WHERE l.user_id = ? AND l2.user_id = ? " +
+                "ORDER BY f.rate DESC ";
+        return jdbcTemplate.query(sql, filmMapper, userId, friendId);
+
     }
 
     public void addLike(long filmId, long userId) {

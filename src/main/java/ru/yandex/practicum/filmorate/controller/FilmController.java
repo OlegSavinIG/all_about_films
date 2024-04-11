@@ -20,6 +20,25 @@ public class FilmController {
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilmsWithFriend(@RequestParam long userId, @RequestParam long friendId) {
+        log.info("Получение общего списка друзей");
+        return filmService.getCommonFilmsWithFriend(userId, friendId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilmsByGenreAndYear(@RequestParam(defaultValue = "10") int count,
+                                                    @RequestParam(defaultValue = "0") Integer genreId,
+                                                    @RequestParam(defaultValue = "0") Integer year) {
+        if (genreId == 0 && year == 0) {
+            log.info("Получение популярных фильмов");
+            return filmService.getTopFilms(count);
+        }
+        log.info("Получение популярных фильмов по жанру или году");
+        return filmService.getPopularFilmsByGenreAndYear(count, genreId, year);
+    }
+
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query, @RequestParam String by) {
         log.info("Поиск фильма по {} с параметром {} ", by, query);
@@ -41,12 +60,6 @@ public class FilmController {
     public Film getFilmById(@PathVariable Long id) {
         log.info("Получение фильма");
         return filmService.getById(id);
-    }
-
-    @GetMapping("/popular")
-    public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Получение списка лучших фильмов");
-        return filmService.getTopFilms(count);
     }
 
     @PostMapping
