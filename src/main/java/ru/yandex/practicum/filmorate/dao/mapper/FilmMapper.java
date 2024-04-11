@@ -68,9 +68,6 @@ public class FilmMapper implements RowMapper<Film> {
                 rs.getInt("genre_id"),
                 rs.getString("name")
         ));
-//        return genres.stream()
-//                .distinct()
-//                .collect(Collectors.toList());
         return genres;
     }
 }

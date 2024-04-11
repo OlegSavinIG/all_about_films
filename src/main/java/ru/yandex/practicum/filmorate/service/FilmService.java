@@ -68,7 +68,7 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(long directorId, String sortBy) {
-        if (directorStorage.getById(directorId) == null) {
+        if (directorStorage.getById(directorId).isEmpty()) {
             throw new NotExistException("Этого режиссера не существует");
         }
         if (!sortBy.equals("likes") && !sortBy.equals("year")) {
@@ -76,5 +76,15 @@ public class FilmService {
         }
         sortBy = sortBy.equals("likes") ? "rate" : "release_date";
         return filmStorage.getFilmsByDirector(directorId, sortBy);
+    }
+
+    public List<Film> searchFilms(String query, String by) {
+        String[] split = by.split(",");
+        if (split.length > 1) {
+            return filmStorage.searchFilmsByDirectorAndTitle(query);
+        }
+        if (by.equals("director")) {
+            return filmStorage.serchFilmsByDirector(query);
+        } else return filmStorage.searchFilmsByTitle(query);
     }
 }

@@ -20,6 +20,11 @@ public class FilmController {
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query, @RequestParam String by) {
+        log.info("Поиск фильма по {} с параметром {} ", by, query);
+        return filmService.searchFilms(query, by);
+    }
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsByDirector(@PathVariable long directorId, @RequestParam String sortBy) {

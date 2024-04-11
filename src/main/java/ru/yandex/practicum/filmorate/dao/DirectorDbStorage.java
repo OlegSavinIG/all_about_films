@@ -59,6 +59,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public void deleteById(int id) {
         String sql = "DELETE FROM directors WHERE director_id = ?";
+        jdbcTemplate.update("DELETE FROM film_directors WHERE director_id = ?", id);
         jdbcTemplate.update(sql, id);
     }
 }

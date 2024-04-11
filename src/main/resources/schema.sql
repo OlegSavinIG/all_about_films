@@ -3,7 +3,7 @@ drop table if exists friendships cascade;
 drop table if exists film_genres cascade;
 drop table if exists films cascade;
 drop table if exists users cascade;
-drop table if exists films_directors cascade;
+drop table if exists film_directors cascade;
 drop table if exists directors cascade;
 drop table if exists reviews cascade;
 drop table if exists reviews_films_users cascade;

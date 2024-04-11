@@ -78,6 +78,9 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT * FROM films " +
                 "WHERE film_id IN (SELECT film_id FROM film_directors WHERE director_id = ?) " +
                 "ORDER BY " + sortBy;
+        if (sortBy.equals("rate")) {
+           return jdbcTemplate.query(sql + " DESC", filmMapper, directorId);
+        }
         List<Film> films = jdbcTemplate.query(sql, filmMapper, directorId);
         return films;
     }
@@ -136,6 +139,35 @@ public class FilmDbStorage implements FilmStorage {
                 "(SELECT film_id FROM likes WHERE user_id = ?)", filmMapper, commonUserId);
         recommendedFilms.removeAll(userFilms);
         return recommendedFilms;
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorAndTitle(String query) {
+        String sql = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.mpa_id, f.rate FROM films f " +
+                "LEFT JOIN film_directors fd ON f.film_id = fd.film_id " +
+                "LEFT JOIN directors d ON fd.director_id = d.director_id " +
+                "WHERE f.name ILIKE ? OR d.name ILIKE ? " +
+                "ORDER BY f.rate";
+       return jdbcTemplate.query(sql, filmMapper , "%" + query + "%", "%" + query + "%");
+    }
+
+    @Override
+    public List<Film> serchFilmsByDirector(String query) {
+        String sql = "SELECT f.* FROM films f " +
+                "JOIN film_directors fd ON f.film_id = fd.film_id " +
+                "JOIN directors d ON fd.director_id = d.director_id " +
+                "WHERE d.name ILIKE ? " +
+                "ORDER BY f.rate";
+        return jdbcTemplate.query(sql, filmMapper, "%" + query + "%");
+    }
+
+    @Override
+    public List<Film> searchFilmsByTitle(String query) {
+        String sql = "SELECT * FROM films " +
+                "WHERE name ILIKE ? " +
+                "ORDER BY rate DESC";
+        List<Film> filmByTitle = jdbcTemplate.query(sql, filmMapper, "%" + query + "%");
+        return filmByTitle;
     }
 
     public void addLike(long filmId, long userId) {
