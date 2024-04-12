@@ -35,7 +35,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private final String sqlDeleteLike = "UPDATE films SET rate = rate - 1 WHERE film_id = ?";
 
-    private final String sqlGetTopFilms = "SELECT * from films group by film_id order by rate desc limit ?";
+    private final String sqlGetTopFilms = "SELECT * from films order by rate desc limit ?";
 
 
     @Autowired

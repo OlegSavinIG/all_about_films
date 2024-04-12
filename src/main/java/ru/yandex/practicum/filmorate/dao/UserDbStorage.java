@@ -61,6 +61,10 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void delete(long id) {
         log.info("Удаление пользователя с ID: {}", id);
+//        jdbcTemplate.update("DELETE FROM likes WHERE user_id = ?", id);
+//        jdbcTemplate.update("DELETE FROM friendships WHERE user_id = ? OR friend_id = ?", id, id);
+//        jdbcTemplate.update("DELETE FROM reviews_rate WHERE user_id = ?", id);
+//        jdbcTemplate.update("DELETE FROM events WHERE user_id = ?", id);
         jdbcTemplate.update(sqlDelete, id);
         log.debug("Пользователь удален с ID: {}", id);
     }

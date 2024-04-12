@@ -48,15 +48,15 @@ create table if not exists friendships (
     user_id BIGINT not null,
     friend_id BIGINT not null,
     primary key (user_id, friend_id),
-    foreign key (user_id) references users(user_id),
-    foreign key (friend_id) references users(user_id)
+    foreign key (user_id) references users(user_id) ON DELETE CASCADE,
+    foreign key (friend_id) references users(user_id) ON DELETE CASCADE
 );
 create table if not exists film_directors (
     director_id BIGINT not null,
     film_id BIGINT not null,
     primary key (director_id, film_id),
-    foreign key (director_id) references directors(director_id),
-    foreign key (film_id) references films(film_id)
+    foreign key (director_id) references directors(director_id) ON DELETE CASCADE,
+    foreign key (film_id) references films(film_id) ON DELETE CASCADE
 );
 create table if not exists reviews (
     review_id BIGINT auto_increment primary key,
@@ -71,32 +71,32 @@ create table if not exists reviews_films_users (
     film_id BIGINT not null,
     user_id BIGINT not null,
     primary key (review_id, film_id),
-    foreign key (film_id) references films(film_id),
-    foreign key (user_id) references users(user_id),
-    foreign key (review_id) references reviews(review_id)
+    foreign key (film_id) references films(film_id) ON DELETE CASCADE,
+    foreign key (user_id) references users(user_id) ON DELETE CASCADE,
+    foreign key (review_id) references reviews(review_id) ON DELETE CASCADE
 );
 create table if not exists reviews_rate (
     review_id BIGINT not null,
     user_id BIGINT not null,
     primary key (review_id, user_id),
-    foreign key (user_id) references users(user_id),
-    foreign key (review_id) references reviews(review_id)
+    foreign key (user_id) references users(user_id) ON DELETE CASCADE,
+    foreign key (review_id) references reviews(review_id) ON DELETE CASCADE
 );
 
 create table if not exists likes (
     film_id BIGINT not null,
     user_id BIGINT not null,
     primary key (film_id, user_id),
-    foreign key (film_id) references films(film_id),
-    foreign key (user_id) references users(user_id)
+    foreign key (film_id) references films(film_id) ON DELETE CASCADE,
+    foreign key (user_id) references users(user_id) ON DELETE CASCADE
 );
 
 create table if not exists film_genres (
     film_id BIGINT not null,
     genre_id INT not null,
     primary key (film_id, genre_id),
-    foreign key (film_id) references films(film_id),
-    foreign key (genre_id) references genres(genre_id)
+    foreign key (film_id) references films(film_id) ON DELETE CASCADE,
+    foreign key (genre_id) references genres(genre_id) ON DELETE CASCADE
 );
 create table if not exists events (
     event_id BIGINT not null auto_increment primary key,
@@ -105,5 +105,5 @@ create table if not exists events (
     event_type varchar(64) not null,
     operation varchar(64) not null,
     timestamp BIGINT,
-    foreign key (user_id) references users(user_id)
+    foreign key (user_id) references users(user_id) ON DELETE CASCADE
 );
