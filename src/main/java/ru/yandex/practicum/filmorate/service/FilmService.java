@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Year;
 import java.util.List;
 
 @Service

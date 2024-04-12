@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.storage.GenreStorage;
-import ru.yandex.practicum.filmorate.exception.NotExistException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
@@ -37,13 +36,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public Optional<Genre> findById(int id) {
-//        String sqlChecker = "Select genre_id from genres where genre_id = ?";
-//        List<Integer> genreId = jdbcTemplate.query(sqlChecker, new Object[]{id}, (rs, rowNum) -> rs.getInt("genre_id"));
-//        if (genreId.isEmpty()) {
-//            throw new NotExistException("Не существует жанра с таким id " + id);
-//        }
         log.info("Выполнение запроса на получение жанра с ID: {}", id);
-
         return jdbcTemplate.query(sqlFindById, genreRowMapper, id).stream().findAny();
     }
 }

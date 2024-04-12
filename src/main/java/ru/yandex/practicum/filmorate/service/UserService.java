@@ -69,6 +69,6 @@ public class UserService {
         if (commonUserId == null) {
             return Collections.emptyList();
         }
-       return filmStorage.getLikedFilmsBYUserId(userId, commonUserId);
+        return filmStorage.getLikedFilmsBYUserId(userId, commonUserId);
     }
 }

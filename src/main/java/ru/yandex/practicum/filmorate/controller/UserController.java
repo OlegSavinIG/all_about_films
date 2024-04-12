@@ -18,6 +18,7 @@ import java.util.List;
 
 public class UserController {
     private final UserService userService;
+
     @GetMapping("/{id}/recommendations")
     public List<Film> getFilmRecommendations(@PathVariable long id) {
         return userService.getFilmRecommendations(id);

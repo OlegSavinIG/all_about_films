@@ -16,9 +16,11 @@ public class Event {
     private long eventId;
     private long entityId;
     private Long timestamp;
+
     public enum EventType {
         LIKE, REVIEW, FRIEND
     }
+
     public enum Operation {
         REMOVE, ADD, UPDATE
     }

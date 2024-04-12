@@ -227,10 +227,7 @@ public class FilmDbStorage implements FilmStorage {
 //        if (mpa == null) {
 //            return true;
 //        }
-        if (mpa.getId() > 5) {
-            return true;
-        }
-        return false;
+        return mpa.getId() > 5;
 
 //        String sqlChecker = "Select mpa_id from mpa where mpa_id = ?";
 //        List<Integer> mpaId = jdbcTemplate.query(sqlChecker, new Object[]{film.getMpa().getId()}, (rs, rowNum) -> rs.getInt("mpa_id"));

@@ -14,6 +14,6 @@ public class FilmConstraintValidator implements ConstraintValidator<MinFilmDate,
 
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext ct) {
-        return value.isBefore(minimumDate) ? false : true;
+        return !value.isBefore(minimumDate);
     }
 }
